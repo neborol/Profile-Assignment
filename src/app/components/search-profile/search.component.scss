@@ -1,0 +1,27 @@
+    .art-symbol {
+        color: rgb(163, 196, 235);
+        font-size: 22px;
+        padding: 0px 8px;
+        background-color: #fafafa;
+    }
+    .profile-list-item {
+        padding: 0;
+    }
+
+    .avatarImg {
+        position: absolute !important;
+        width: 35px !important;
+        height: 33px !important;
+        left: 16px !important;
+        top: 0 !important;
+    }
+    .avatarContainer {
+        position: relative;
+        padding: 17px;
+    }
+    .profile-name {
+        position: relative;
+        left: 18px;
+        top: 5px;
+    }
+
