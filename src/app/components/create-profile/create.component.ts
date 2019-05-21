@@ -1,7 +1,11 @@
-import { Component, ViewChild } from '@angular/core';
-import { ProfileItem } from './Profile.model';
+import { Component, ViewChild} from '@angular/core';
+import { ProfileItem } from '../../Store/models/ProfileItem';
 import { NgForm } from '@angular/forms';
-import Dummydata from '../../../assets/dummyProfileData';
+import { NgRedux, select } from '@angular-redux/store';
+import { IUserState } from 'src/app/Store/models/InitialUserState';
+import { EProfileActions } from '../../Store/actions/ProfileActions';
+import { Observable} from 'rxjs';
+import { trimInput } from './../../sharedUtility/trimUtility';
 
 @Component({
   selector: 'app-create',
@@ -9,37 +13,82 @@ import Dummydata from '../../../assets/dummyProfileData';
   styleUrls: ['./create.component.scss']
 })
 export class CreateComponent {
-  todoInput = '';
-  totalCount = 0;
-  remainingCount = 0;
-  showErrorMessage = false;
   isSearchProfile = false;
-  profiles: Array<ProfileItem> = [...Dummydata];
+  showStoreProfiles = false;
+  toggleShowStoreSnapshotButtonText = 'View Store Snapshot';
+  firstNameInValid = false;
+  lastNameInValid = false;
+  roleInValid = false;
+  profileCreationFormValid = false;
+  aNRegex = /^[a-z0-9 ]+$/i;
 
+ // Reference the profile creation form from the template
   @ViewChild('pcf') createProfileForm: NgForm;
 
-  onProfileCreationFormSubmit() {
-    const profileData = {
-      firstName: this.createProfileForm.value.firstName,
-      lastName: this.createProfileForm.value.lastName,
-      gender: this.createProfileForm.value.gender,
-      role: this.createProfileForm.value.role,
-    };
-    const user = new ProfileItem(profileData);
-    this.profiles.push(user);
-    this.createProfileForm.reset();
+  // Automatically extract the users from the redux store and make available in the template as '(users | async)'
+  @select(['users']) users$: Observable<IUserState>;
+
+  // Dependency injection of the Redux library
+  constructor(private ngRedux: NgRedux<any>) {}
+
+  // Validate the first name input
+  validateFirstName(entry) {
+    if (entry.value && this.aNRegex.test(entry.value)) {
+      this.firstNameInValid = false;
+    } else { this.firstNameInValid = true; }
   }
 
+   // Validate the last name input
+  validateLastName(entry) {
+    if (entry.value && this.aNRegex.test(entry.value)) {
+      this.lastNameInValid = false;
+    } else { this.lastNameInValid = true; }
+  }
+
+   // Validate the role input
+  validateRole(entry) {
+    if (entry.value && this.aNRegex.test(entry.value)) {
+      this.roleInValid = false;
+    } else { this.roleInValid = true; }
+  }
+
+  // This method is executed when the profile creation form is submitted
+  onProfileCreationFormSubmit() {
+    const profileData = {
+      firstName: trimInput(this.createProfileForm.value.firstName),
+      lastName: trimInput(this.createProfileForm.value.lastName),
+      gender: trimInput(this.createProfileForm.value.gender),
+      role: trimInput(this.createProfileForm.value.role),
+    };
+
+    // An instance of the profile object is created and passed to ProfileItem constructor to be used to create individual profiles.
+    const user = new ProfileItem(profileData);
+
+    // Verify if the form input fields are properly validated, if so, dispatch an
+    // action to the userReducer and send the created user/profile
+    if (!this.firstNameInValid && !this.lastNameInValid && !this.roleInValid) {
+      this.ngRedux.dispatch({type: EProfileActions.GetProfiles, payload: user});
+      this.profileCreationFormValid = true;
+      this.createProfileForm.reset();
+    } else {
+      this.profileCreationFormValid = false;
+    }
+  }
+
+  // This method gets executed on button click, just to see howmany user profiles we currently have in the store.
+  getStoreSnapshot() {
+    this.showStoreProfiles = !this.showStoreProfiles;
+    this.toggleShowStoreSnapshotButtonText = this.showStoreProfiles ? 'Hide Store Snapshot' : 'View Store Snapshot';
+  }
+
+  // Pass a profile from the template, and for this passed in profile, set it's "showDetails" property to true.
   toggleProfileDetails(profile) {
     profile.showDetails = !profile.showDetails;
   }
 
+  // This method gets executed in order to toggle between the profile-creation page and the search-query page.
   toggleSearchOrCreateProfile() {
     this.isSearchProfile = !this.isSearchProfile;
-  }
-
-  searchAProfile() {
-    this.isSearchProfile = true;
   }
 
 }

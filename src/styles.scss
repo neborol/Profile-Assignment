@@ -1,3 +1,24 @@
+/* Styles applicable to the whole application. */
 body {
     text-align: left;
+}
+
+input.ng-invalid.ng-touched {
+    border: 1px solid red;
+}
+
+.help-block {
+    color: red;
+}
+
+button[disabled]{
+    background-color: rgb(221, 219, 219) !important;
+}
+
+.profile-output {
+    resize:both !important;
+    max-width: 100%; 
+    max-height: 100%;
+    text-align: left;
+    padding: 0;
 }

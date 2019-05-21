@@ -1,5 +1,6 @@
 import { IProfileItem } from './IProfileItem';
 
+// The ProfileItem class, showing all the properties that each new profile must contian.
 export class ProfileItem implements IProfileItem {
     firstName;
     lastName;

@@ -1,30 +1,41 @@
+<!-- Search Profile component template -->
 <div>
   <div class="input-row mb-3">
     <strong>
       <h4>Search A Profile</h4>
     </strong>
 
+    <!-- Profile search form -->
     <form #psf="ngForm">
       <div class="form-group row">
         <label for="profiles-search" class="col-sm-2 col-form-label">Search A Profile:</label>
+        
+        <!-- A warning message to let the user know that the @ symbol must be used -->
+        <div *ngIf="alertArtSymbolRequired">
+          <span class="badge badge-warning">Note That Search is Posible Only with Prior entry of the @ Symbole</span>
+        </div>
 
+        <!-- Profile search query input field group to enable the use of the @ symbol -->
         <div *ngIf="!screenForArt" class="input-group col-sm-10 mb-3">
           <div class="input-group-prepend">
             <span class="input-group-text art-symbol"></span>
           </div>
           <input (input)="preSearchQueryInput(preQueryI)" #preQueryI type="text"  name="presSearchEntry" class="form-control query-box"
-            aria-label="profile-search" aria-describedby="basic-addon1" placeholder="Search A Profile" />
+            aria-label="profile-search" aria-describedby="basic-addon1" placeholder="Search With @ Input" required/>
         </div>
         <div *ngIf="screenForArt" class="input-group col-sm-10 mb-3">
           <div class="input-group-prepend">
             <span class="input-group-text art-symbol"></span>
             <span class="input-group-text art-symbol" id="basic-addon1">@</span>
           </div>
-          <input (keydown)="searchQueryInput()" autofocus #queryI type="text" [(ngModel)]="searchQueryString" (blur)="returnControl()" name="searchEntry" class="form-control query-box"
-            aria-label="profile-search" aria-describedby="basic-addon1" />
+          <input (keydown)="searchQueryInput()" #queryI type="text" [(ngModel)]="searchQueryString" 
+            (blur)="returnControl()" name="searchEntry" class="form-control query-box"
+              aria-label="profile-search" aria-describedby="basic-addon1" autofocus/>
         </div>
+         <!-- End of the Profile search query input fild group -->
       </div>
 
+      <!-- Radio Input filters to filter the profiles in the redux store by "first name" or "last name" -->
       <fieldset class="form-group">
         <div class="row">
           <legend class="col-form-label col-sm-2 pt-0">Filter By:</legend>
@@ -47,7 +58,7 @@
         </div>
       </fieldset>
 
-
+      <!-- The clear form button with some extra div tags to enable proper positioning in the UI -->
       <div class="form-group row">
         <div class="col-sm-2"></div>
         <div class="col-sm-10">
@@ -60,15 +71,19 @@
 
       </div>
     </form>
+    <!-- End of the profile search form -->
   </div>
 
+  <!-- Start of profile-list and details display UI markup -->
   <div  style="border-top: solid 1px #cccccc;">
+    
+    <!-- Display of a list of profiles being filtered as the user types -->
     <div *ngIf="filteredProfiles" class="form-group row">
       <label for="inputEmail3" class="col-sm-2 col-form-label mt-3">Profiles Window:</label>
       <div class="col-sm-6 sm-offset-2 mt-3">
-        <div class="card">
+        <div class="card" style="border: none;">
           <ul class="list-group list-group-flush">
-            <li class="list-group-item profile-list-item" *ngFor="let profile of filteredProfiles">
+            <li class="list-group-item profile-list-item" (click)="displayProfileDetailFromList(profile)" *ngFor="let profile of filteredProfiles">
               <div class="row">
                 <div class="col-sm-3 avatarContainer">
                   <img [src]="'assets/images/' + profile.avatarLink" alt="Profile Avatar" class="avatarImg" />
@@ -81,13 +96,29 @@
           </ul>
         </div>
       </div>
+    </div> 
+
+    <!-- For a better user experience, this is some messaging alert to let the user know that no profiles are 
+      currently being found by the entered search term. -->
+    <div *ngIf="showWarningAlert">
+      <div class="alert alert-warning text-center" role="alert">
+        No Profile currently being filtered.
+      </div>
     </div>
 
-    <div *ngIf="!filteredProfiles">
-        <div class="alert alert-warning" role="alert">
-          There is no Profile available to display.
-        </div>
-      </div>
+    <!-- A textarea element to show the data for a selected profile.  -->
+    <div *ngIf="showDetailsInTextarea">
+      <textarea name="profileDisplay" rows="3" wrap cols="33" class="form-control mt-3 profile-output">
+              Profile Owner:  {{ currentProfile.firstName }}  {{ currentProfile.lastName }} &#10;
+              Owner's Role:  {{ currentProfile.role }} &#13;
+              Gender:  {{ currentProfile.gender }} &#10;
+        </textarea>
+    </div>
+
   </div>
 
 </div>
+
+
+
+

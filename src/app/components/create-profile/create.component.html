@@ -1,47 +1,67 @@
+ <!-- Application template container -->
  <div class="container">
    <h1>Profile Manager</h1>
 
    <div class="row">
-     <div *ngIf="isSearchProfile" class="col-md-12">
+     <!-- Page-top toggle buttons -->
+     <div class="col-md-6">
+       <button (click)="getStoreSnapshot()" class="btn btn-sm my-3 btn-secondary float-left">View Store Snapshot</button>
+     </div>
+     <div *ngIf="isSearchProfile" class="col-md-6">
        <button (click)="toggleSearchOrCreateProfile()" class="btn btn-sm btn-success float-right">Create A
          Profile</button>
      </div>
-     <div *ngIf="!isSearchProfile" class="col-md-12">
+     <div *ngIf="!isSearchProfile" class="col-md-6">
        <button (click)="toggleSearchOrCreateProfile()" class="btn btn-sm btn-success float-right">Search For A
          Profile</button>
      </div>
+
+   </div>
+   <!-- A list of first and last names of profiles currently available in the Redux store -->
+   <div *ngIf="showStoreProfiles">
+      <ul>
+        <li *ngFor="let item of (users$ | async)">{{ item.firstName }}  {{ item.lastName }}</li>
+      </ul>
    </div>
 
-
+   <!-- Start of Create-Profile component markup -->
    <div *ngIf="!isSearchProfile">
      <div class="input-row mb-3">
        <strong>
          <h4>Create A Profile</h4>
        </strong>
-
+       <!-- Profile submission form -->
        <form (ngSubmit)="onProfileCreationFormSubmit()" #pcf="ngForm">
          <div class="form-group row">
+           <!-- First Name Input -->
            <legend class="col-form-label col-sm-2 pt-0 mt-2">First Name:</legend>
            <div class="col-sm-10">
              <div class="row  my-1">
                <div class="col-sm-12">
-                 <input type="text" ngModel name="firstName" class="form-control" id="firstName"
-                   placeholder="First Name">
+                 <input type="text" (input)="validateFirstName(firstName)" ngModel name="firstName" class="form-control" id="firstName"
+                   placeholder="First Name" #firstName="ngModel" required>
+                   <span class="help-block" *ngIf="!firstName.valid && firstName.touched">This is required</span>
+                   <span class="help-block" *ngIf="firstNameInValid && firstName.valid">Only Alpha numeric characters are allowed.</span>
                </div>
              </div>
            </div>
 
+           <!-- Last Name Input -->
            <legend class="col-form-label col-sm-2 pt-0 mt-2">Last Name:</legend>
            <div class="col-sm-10">
              <div class="row  my-1">
                <div class="col-sm-12">
-                 <input type="text" ngModel name="lastName" class="form-control" id="lastName" placeholder="Last Name">
-               </div>
+                  <input type="text" (input)="validateLastName(lastName)" ngModel name="lastName" class="form-control" id="lastName" 
+                  placeholder="Last Name" #lastName="ngModel" required>
+                  <span class="help-block" *ngIf="!lastName.valid && lastName.touched">This is required</span>
+                  <span class="help-block" *ngIf="lastNameInValid && lastName.valid">Only Alpha numeric characters are allowed.</span>
+              </div>
              </div>
            </div>
 
          </div>
 
+         <!-- Gender Input -->
          <fieldset class="form-group">
            <div class="row">
              <legend class="col-form-label col-sm-2 pt-0">Gender:</legend>
@@ -62,18 +82,22 @@
              </div>
            </div>
          </fieldset>
+
+         <!-- Role Input -->
          <div class="form-group row">
            <legend class="col-form-label col-sm-2 pt-0 mt-2">Role:</legend>
            <div class="col-sm-10">
              <div class="row  my-1">
                <div class="col-sm-12">
-                 <input type="text" ngModel name="role" class="form-control" id="role" placeholder="Enter your role">
+                 <input type="text" (input)="validateRole(role)" ngModel name="role" class="form-control" id="role" placeholder="Enter your role" #role="ngModel" required>
+                 <span class="help-block" *ngIf="!role.valid && role.touched">This is required</span>
+                 <span class="help-block" *ngIf="roleInValid && role.valid">Only Alpha numeric characters are allowed.</span>
                </div>
              </div>
 
              <div class="form-group row my-3">
                <div class="col-md-3">
-                 <button type="submit" class="btn btn-lg btn-primary">Add Profile</button>
+                 <button type="submit" class="btn btn-lg btn-primary" [disabled]="">Add Profile</button>
                </div>
                <div class="col-md-9">
                  <button type="reset" class="btn btn-sm btn-secondary float-right">Clear Form</button>
@@ -83,10 +107,11 @@
 
          </div>
        </form>
+       <!-- End of Profile creation form -->
      </div>
 
-
-     <div *ngIf="profiles.length > 0" class="form-group row" style="border-top: solid 1px #cccccc;">
+     <!-- Profile details out put in textarea element -->
+     <div *ngIf="(users$ | async)?.length > 0" class="form-group row" style="border-top: solid 1px #cccccc;">
        <label for="inputEmail3" class="col-sm-2 col-form-label mt-3">Profiles Window:</label>
        <div class="col-sm-10 mt-3">
          <div class="card">
@@ -94,7 +119,7 @@
              Added Profiles
            </div>
            <ul class="list-group list-group-flush">
-             <li class="list-group-item" *ngFor="let profile of profiles; let idx = index">
+             <li class="list-group-item" *ngFor="let profile of (users$ | async); let idx = index">
                <span class="list-td"> {{ profile.firstName }} {{ profile.lastName }}</span>
                <button (click)="toggleProfileDetails(profile)" class="btn btn-sm btn-primary mb-3 float-right">
                   <span *ngIf="profile.showDetails; else hideDetails">Hide Details</span> 
@@ -105,7 +130,7 @@
                         Profile Owner:  {{ profile.firstName }}  {{ profile.lastName }} &#10;
                         Owner's Role:  {{ profile.role }} &#13;
                         Gender:  {{ profile.gender }} &#10;
-                    </textarea>
+                  </textarea>
                </div>
              </li>
            </ul>
@@ -114,12 +139,13 @@
      </div>
 
    </div>
-
    <!-- End of Profile Creation page -->
 
-    <!-- Search profile component container -->
+
+    <!-- Nested Search profile component -->
    <div *ngIf="isSearchProfile">
-      <app-search [passedDownProfiles]="profiles"></app-search>
+      <!-- search component passed as array of profiles created -->
+      <app-search [passedDownProfiles]="(users$ | async)"></app-search>
    </div>
 
  </div>
