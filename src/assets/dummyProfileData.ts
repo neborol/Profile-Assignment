@@ -8,7 +8,7 @@ export default [{
   "showDetails": false
 }, {
   "firstName": "Suzan",
-  "lastName": "Rice",
+  "lastName": "Chicken",
   "gender": "female",
   "role": "Admin",
   "avatarLink": "female-avatar.jpg",
@@ -22,7 +22,7 @@ export default [{
   "showDetails": false
 }, {
   "firstName": "Jane",
-  "lastName": "Deer",
+  "lastName": "Doh",
   "gender": "female",
   "role": "Coordinator",
   "avatarLink": "female-avatar.jpg",
