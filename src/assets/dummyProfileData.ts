@@ -22,7 +22,7 @@ export default [{
   "showDetails": false
 }, {
   "firstName": "Jane",
-  "lastName": "Doh",
+  "lastName": "Doe",
   "gender": "female",
   "role": "Coordinator",
   "avatarLink": "female-avatar.jpg",
