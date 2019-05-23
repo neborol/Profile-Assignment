@@ -9,16 +9,16 @@ export const userReducer = (
     action: ProfileActions
   ): IUserState => {
     switch (action.type) {
-      case EProfileActions.GetProfiles:
+      case EProfileActions.UpdateProfiles:
         return {
           ...state,
           users: [...state.users, action.payload]
         };
 
-      case EProfileActions.GetProfile: {
+      case EProfileActions.UpdateProfile: {
         return {
           ...state,
-          users: action.payload
+          selectedUser: action.payload
         };
       }
 

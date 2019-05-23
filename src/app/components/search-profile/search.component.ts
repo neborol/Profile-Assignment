@@ -1,18 +1,21 @@
-import { Component, Input, ViewChild} from '@angular/core';
+import { Component, Input, ViewChild, OnInit} from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { ProfileItem } from '../../Store/models/ProfileItem';
 import { IProfileItem } from './../../Store/models/IProfileItem';
 import { trimInput } from './../../sharedUtility/trimUtility';
+import { ProfileService } from './../../profileService';
+import { IUserState } from 'src/app/Store/models/InitialUserState';
+import { Observable } from 'rxjs';
+import { EProfileActions } from 'src/app/Store/actions/ProfileActions';
 
 @Component({
   selector: 'app-search',
   templateUrl: './search.component.html',
   styleUrls: ['./search.component.scss']
 })
-export class SearchComponent {
-  @Input() passedDownProfiles: ProfileItem[];
+export class SearchComponent implements OnInit {
   @ViewChild('psf') searchProfileForm: NgForm; // References the profile search form
-  filteredProfiles: Array<ProfileItem>;
+  filteredProfiles: IProfileItem[];
   canInputQuery = false;
   searchQueryString = '';
   showWarningAlert = false;
@@ -24,10 +27,13 @@ export class SearchComponent {
   showDetailsInTextarea = false;
   currentProfile: IProfileItem = null;
   alertArtSymbolRequired = false;
+  storeData$: Observable<IUserState>;
 
+  constructor(private pServ: ProfileService) { }
 
-
-  constructor() { }
+  ngOnInit() {
+    this.storeData$ = this.pServ.getAllUsersHandle();
+  }
 
   // Initial search functionality that takes the @ character and then toggles the real
   // search input with the @ character
@@ -52,23 +58,22 @@ export class SearchComponent {
     const regex1 = new RegExp('^' + this.searchQueryString, 'i');
     const regex2 = new RegExp(' ' + this.searchQueryString, 'ig');
 
-    this.filteredProfiles = this.passedDownProfiles.filter((userItem) => {
-      return regex1.test(userItem[this.searchProfileForm.value.filterCategory]) ||
-      regex2.test(userItem[this.searchProfileForm.value.filterCategory]);
-    });
+    this.storeData$.subscribe((profile: any) => {
+      this.filteredProfiles = (profile).filter((userItem: ProfileItem) => {
+        return regex1.test(userItem[this.searchProfileForm.value.filterCategory]) ||
+        regex2.test(userItem[this.searchProfileForm.value.filterCategory]);
+      });
 
-    this.showWarningAlert = this.filteredProfiles.length === 0 ? true : false;
-    if (this.filteredProfiles.length === 0) {
-        this.filteredProfiles = this.passedDownProfiles;
-    }
+      this.showWarningAlert = this.filteredProfiles.length === 0 ? true : false;
+      if (this.filteredProfiles.length === 0) {
+          this.filteredProfiles = profile.users;
+      }
+    });
   }
 
   // Take a profile object and set it's showDetails property to true and display the details in a textarea box.
-  displayProfileDetailFromList(singleProfile) {
-    this.filteredProfiles.forEach(x => x.showDetails = false);
-    singleProfile.showDetails = true;
-    this.currentProfile = singleProfile;
-    this.showDetailsInTextarea = singleProfile.showDetails;
+  displayProfileDetailFromList(profileToDisplay) {
+    this.pServ.dispatchTextAreaToStore({type: EProfileActions.UpdateProfile, payload: profileToDisplay});
   }
 
 }

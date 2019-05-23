@@ -1,0 +1,22 @@
+.profile-list-item {
+    padding: 0;
+    border: none;
+    border: solid 1px #ddd !important;
+}
+
+.avatarImg {
+    position: absolute !important;
+    width: 35px !important;
+    height: 33px !important;
+    left: 16px !important;
+    top: 0 !important;
+}
+.avatarContainer {
+    position: relative;
+    padding: 17px;
+}
+.profile-name {
+    position: relative;
+    left: 18px;
+    top: 5px;
+}

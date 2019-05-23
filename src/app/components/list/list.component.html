@@ -1,0 +1,35 @@
+<h1 class="my-3">Profile Manager</h1>
+
+<h3 class="my-3">Available Profiles In The Store</h3>
+
+<div>
+    <!-- Display of a list of profiles being filtered as the user types -->
+    <div *ngIf="(stateUsers$ | async)" class="form-group row">
+        
+        <div class="col-sm-6 sm-offset-2 mt-3">
+          <div class="card" style="border: none;">
+            <ul class="list-group list-group-flush">
+              <li class="list-group-item profile-list-item" 
+                  (click)="displayProfileDetailFromList(profile)"
+                  *ngFor="let profile of (stateUsers$ | async)" 
+                  data-toggle="modal" 
+                  data-target=".test_profile_display">
+
+                <div class="row">
+                  <div class="col-sm-3 avatarContainer">
+                    <img [src]="'assets/images/' + profile.avatarLink" alt="Profile Avatar" class="avatarImg" />
+                  </div>
+                  <div class="col-sm-9">
+                    <span class="list-td profile-name"> {{ profile.firstName }} {{ profile.lastName }}</span>
+                  </div>
+                </div>
+
+              </li>
+            </ul>
+          </div>
+        </div>
+
+      </div> 
+</div>
+
+

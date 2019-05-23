@@ -1,5 +1,6 @@
 <!-- Search Profile component template -->
 <div>
+    <h1 class="my-3">Profile Manager</h1>
   <div class="input-row mb-3">
     <strong>
       <h4>Search A Profile</h4>
@@ -83,7 +84,12 @@
       <div class="col-sm-6 sm-offset-2 mt-3">
         <div class="card" style="border: none;">
           <ul class="list-group list-group-flush">
-            <li class="list-group-item profile-list-item" (click)="displayProfileDetailFromList(profile)" *ngFor="let profile of filteredProfiles">
+            <li class="list-group-item profile-list-item" 
+            (click)="displayProfileDetailFromList(profile)" 
+            *ngFor="let profile of filteredProfiles"
+            data-toggle="modal" 
+            data-target=".test_profile_display"
+            >
               <div class="row">
                 <div class="col-sm-3 avatarContainer">
                   <img [src]="'assets/images/' + profile.avatarLink" alt="Profile Avatar" class="avatarImg" />
@@ -106,14 +112,7 @@
       </div>
     </div>
 
-    <!-- A textarea element to show the data for a selected profile.  -->
-    <div *ngIf="showDetailsInTextarea">
-      <textarea name="profileDisplay" rows="3" wrap cols="33" class="form-control mt-3 profile-output">
-              Profile Owner:  {{ currentProfile.firstName }}  {{ currentProfile.lastName }} &#10;
-              Owner's Role:  {{ currentProfile.role }} &#13;
-              Gender:  {{ currentProfile.gender }} &#10;
-        </textarea>
-    </div>
+ 
 
   </div>
 

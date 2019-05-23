@@ -1,6 +1,38 @@
-<!-- The main profile-component nested in the app component which is the root component -->
-<div>
-  <app-create></app-create> 
+<!-- Top Levl App Container -->
+<div class="container">
+  <!-- Navigation bar -->
+  <div class="row">
+    <div class="col-xs-12 mt-3">
+        <ul class="nav nav-tabs">
+          <li class="nav-item">
+              <a routerLink="/" class="nav-link" routerLinkActive="active" 
+              [routerLinkActiveOptions]="{exact: true}">Create Profile</a>
+          </li>
+          <li class="nav-item">
+              <a routerLink="/search" class="nav-link" routerLinkActive="active"
+              [routerLinkActiveOptions]="{exact: true}">Search Profile</a>
+          </li>
+          <li class="nav-item">
+              <a routerLink="/list" class="nav-link" routerLinkActive="active"
+              [routerLinkActiveOptions]="{exact: true}">Profiles List</a>
+          </li>
+        </ul>
+    </div>
+  </div>
+  <!-- End of Navigation bar -->
+
+  <!-- Main application component display content -->
+  <div class="row">
+    <div class="col-xs-12 col-md-12">
+      <router-outlet></router-outlet>
+    </div>
+  </div>  
+  <!-- End Main -->
+
+
+  <footer>
+    <app-textarea></app-textarea>
+  </footer>
+  
 </div>
-
-
+<!-- End of App Container -->

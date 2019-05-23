@@ -1,21 +1,9 @@
  <!-- Application template container -->
  <div class="container">
-   <h1>Profile Manager</h1>
+   
+   <h1 class="my-3">Profile Manager</h1>
 
    <div class="row">
-     <!-- Page-top toggle buttons -->
-     <div class="col-md-6">
-       <button (click)="getStoreSnapshot()" class="btn btn-sm my-3 btn-secondary float-left">View Store Snapshot</button>
-     </div>
-     <div *ngIf="isSearchProfile" class="col-md-6">
-       <button (click)="toggleSearchOrCreateProfile()" class="btn btn-sm btn-success float-right">Create A
-         Profile</button>
-     </div>
-     <div *ngIf="!isSearchProfile" class="col-md-6">
-       <button (click)="toggleSearchOrCreateProfile()" class="btn btn-sm btn-success float-right">Search For A
-         Profile</button>
-     </div>
-
    </div>
    <!-- A list of first and last names of profiles currently available in the Redux store -->
    <div *ngIf="showStoreProfiles">
@@ -111,7 +99,7 @@
      </div>
 
      <!-- Profile details out put in textarea element -->
-     <div *ngIf="(users$ | async)?.length > 0" class="form-group row" style="border-top: solid 1px #cccccc;">
+     <!-- <div *ngIf="(storeData | async)?.length > 0" class="form-group row" style="border-top: solid 1px #cccccc;">
        <label for="inputEmail3" class="col-sm-2 col-form-label mt-3">Profiles Window:</label>
        <div class="col-sm-10 mt-3">
          <div class="card">
@@ -119,7 +107,7 @@
              Added Profiles
            </div>
            <ul class="list-group list-group-flush">
-             <li class="list-group-item" *ngFor="let profile of (users$ | async); let idx = index">
+             <li class="list-group-item" *ngFor="let profile of (storeData | async); let idx = index">
                <span class="list-td"> {{ profile.firstName }} {{ profile.lastName }}</span>
                <button (click)="toggleProfileDetails(profile)" class="btn btn-sm btn-primary mb-3 float-right">
                   <span *ngIf="profile.showDetails; else hideDetails">Hide Details</span> 
@@ -136,16 +124,9 @@
            </ul>
          </div>
        </div>
-     </div>
+     </div> -->
 
    </div>
    <!-- End of Profile Creation page -->
-
-
-    <!-- Nested Search profile component -->
-   <div *ngIf="isSearchProfile">
-      <!-- search component passed as array of profiles created -->
-      <app-search [passedDownProfiles]="(users$ | async)"></app-search>
-   </div>
 
  </div>

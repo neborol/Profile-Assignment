@@ -1,18 +1,19 @@
-import { Component, ViewChild} from '@angular/core';
+import { Component, ViewChild, OnInit} from '@angular/core';
 import { ProfileItem } from '../../Store/models/ProfileItem';
 import { NgForm } from '@angular/forms';
 import { NgRedux, select } from '@angular-redux/store';
 import { IUserState } from 'src/app/Store/models/InitialUserState';
 import { EProfileActions } from '../../Store/actions/ProfileActions';
-import { Observable} from 'rxjs';
+import { Router, ActivatedRoute } from '@angular/router';
 import { trimInput } from './../../sharedUtility/trimUtility';
+import { ProfileService } from 'src/app/profileService';
 
 @Component({
   selector: 'app-create',
   templateUrl: './create.component.html',
   styleUrls: ['./create.component.scss']
 })
-export class CreateComponent {
+export class CreateComponent implements OnInit {
   isSearchProfile = false;
   showStoreProfiles = false;
   toggleShowStoreSnapshotButtonText = 'View Store Snapshot';
@@ -21,15 +22,25 @@ export class CreateComponent {
   roleInValid = false;
   profileCreationFormValid = false;
   aNRegex = /^[a-z0-9 ]+$/i;
-
+  storeData;
  // Reference the profile creation form from the template
   @ViewChild('pcf') createProfileForm: NgForm;
 
-  // Automatically extract the users from the redux store and make available in the template as '(users | async)'
-  @select(['users']) users$: Observable<IUserState>;
+  // // Automatically extract the users from the redux store and make available in the template as '(users | async)'
+  // @select(['users']) users$: Observable<IUserState>;
 
   // Dependency injection of the Redux library
-  constructor(private ngRedux: NgRedux<any>) {}
+  constructor(
+    public router: Router,
+    public route: ActivatedRoute,
+    private ngRedux: NgRedux<any>,
+    private profileServ: ProfileService,
+  ) {
+  }
+
+  ngOnInit() {
+    this.storeData = this.profileServ.getAllUsersHandle();
+  }
 
   // Validate the first name input
   validateFirstName(entry) {
@@ -67,24 +78,16 @@ export class CreateComponent {
     // Verify if the form input fields are properly validated, if so, dispatch an
     // action to the userReducer and send the created user/profile
     if (!this.firstNameInValid && !this.lastNameInValid && !this.roleInValid) {
-      this.ngRedux.dispatch({type: EProfileActions.GetProfiles, payload: user});
+      this.ngRedux.dispatch({type: EProfileActions.UpdateProfiles, payload: user});
       this.profileCreationFormValid = true;
       this.createProfileForm.reset();
+      this.router.navigate(['/list'], {relativeTo: this.route});
     } else {
       this.profileCreationFormValid = false;
     }
   }
 
-  // This method gets executed on button click, just to see howmany user profiles we currently have in the store.
-  getStoreSnapshot() {
-    this.showStoreProfiles = !this.showStoreProfiles;
-    this.toggleShowStoreSnapshotButtonText = this.showStoreProfiles ? 'Hide Store Snapshot' : 'View Store Snapshot';
-  }
 
-  // Pass a profile from the template, and for this passed in profile, set it's "showDetails" property to true.
-  toggleProfileDetails(profile) {
-    profile.showDetails = !profile.showDetails;
-  }
 
   // This method gets executed in order to toggle between the profile-creation page and the search-query page.
   toggleSearchOrCreateProfile() {
